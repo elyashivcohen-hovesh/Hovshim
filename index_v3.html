@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>סימולטור חובשים גדוד 101 — V3</title><style>
+:root{--bg:#eef2f3;--card:#fff;--ink:#172126;--muted:#64727a;--line:#d8e0e3;--accent:#164e63;--soft:#e8f1f4;--warn:#fff4dc}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Hebrew",sans-serif;background:var(--bg);color:var(--ink);direction:rtl}
+button{font:inherit}.app{max-width:760px;margin:auto;min-height:100vh;background:#f7f9fa}
+header{position:sticky;top:0;z-index:5;background:#17323d;color:white;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:800}.clock{font-size:22px;font-weight:900;direction:ltr}
+main{padding:14px}.screen{display:none}.screen.active{display:block}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #0000000a}
+h1,h2,h3{margin:0 0 10px}.muted{color:var(--muted);font-size:14px}.status{line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cardbtn{min-height:74px;border:1px solid #c9d5d9;border-radius:14px;background:white;padding:12px;font-weight:800;color:#18313a}
+.cardbtn:active{transform:scale(.98);background:var(--soft)}.cardbtn.primary{background:#17323d;color:white}
+.cardbtn[disabled]{opacity:.4}.wide{grid-column:1/-1}.back{background:none;border:0;color:var(--accent);font-weight:800;padding:8px 0}
+.log{max-height:265px;overflow:auto}.entry{border-bottom:1px solid #edf0f1;padding:9px 0;line-height:1.45}.t{font-weight:900;margin-left:8px;direction:ltr;display:inline-block}
+.tags{display:flex;gap:7px;flex-wrap:wrap}.tag{background:var(--soft);border-radius:999px;padding:6px 9px;font-size:13px}
+.notice{background:var(--warn);padding:10px;border-radius:12px;line-height:1.45}
+.modal{position:fixed;inset:0;background:#0008;z-index:20;display:flex;align-items:flex-end}.modal.hidden{display:none}.sheet{background:white;width:100%;max-width:760px;margin:auto;border-radius:20px 20px 0 0;padding:18px;max-height:80vh;overflow:auto}
+.score{font-size:54px;font-weight:900;text-align:center}.small{font-size:13px}.sectionTitle{font-size:15px;color:var(--muted);margin:14px 0 8px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}.modal{align-items:center}.sheet{border-radius:20px;max-width:650px}}
+</style></head><body>
+<div class="app">
+<header><div><div class="brand">סימולטור חובשים גדוד 101</div><div class="small" id="phase">V3</div></div><div class="clock" id="clock">00:00</div></header>
+<main>
+<section id="home" class="screen active">
+ <div class="panel"><h1>V3 — סימולטור החלטות</h1><p class="status">הצ׳אט הוחלף בכרטיסיות פעולה. הכרטיסיות מבוססות על המידע הגלוי לחובש ועל שלב התרחיש.</p></div>
+ <div class="grid"><button id="team" class="cardbtn primary">חובש צוותי</button><button id="tagad" class="cardbtn primary">חובש תאג״ד</button></div>
+</section>
+<section id="sim" class="screen">
+ <div class="panel"><div id="eta" class="muted"></div><h3>תמונת מצב</h3><div id="picture" class="status"></div><div id="known" class="tags" style="margin-top:10px"></div></div>
+ <div class="panel"><h3>מה אתה עושה?</h3><div id="cards" class="grid"></div></div>
+ <div class="panel"><h3>יומן תרחיש</h3><div id="log" class="log"></div></div>
+</section>
+<section id="debrief" class="screen">
+ <div class="panel"><h2>תחקיר</h2><div class="score" id="score">0</div><div class="muted" style="text-align:center">מתוך 100 — אב־טיפוס לניקוד</div></div>
+ <div class="panel"><h3>נקודות מרכזיות</h3><div id="review"></div></div>
+ <div class="grid"><button id="again" class="cardbtn primary">תרחיש אקראי נוסף</button><button id="homeBtn" class="cardbtn">מסך ראשי</button></div>
+</section>
+</main></div>
+<div id="modal" class="modal hidden"><div class="sheet"><button id="closeSheet" class="back">← חזרה</button><h3 id="sheetTitle"></h3><div id="sheetGrid" class="grid"></div></div></div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.round(s%60)).padStart(2,'0')}`;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+let S=null;
+
+const templates=[
+ {mech:'ירי',visible:'דימום משמעותי נראה מירך ימין.',wounds:[
+  {id:'w1',place:'ירך ימין',zone:'limb',bleeding:true,known:true,treated:false},
+  {id:'w2',place:'חזה שמאל',zone:'chest',bleeding:true,known:false,treated:false}]},
+ {mech:'פיצוץ ורסיסים',visible:'דם נראה באזור מפשעה שמאל.',wounds:[
+  {id:'w1',place:'מפשעה שמאל',zone:'junction',bleeding:true,known:true,treated:false},
+  {id:'w2',place:'גב עליון',zone:'back',bleeding:true,known:false,treated:false}]},
+ {mech:'דקירה',visible:'דימום משמעותי נראה מאמה ימין.',wounds:[
+  {id:'w1',place:'אמה ימין',zone:'limb',bleeding:true,known:true,treated:false},
+  {id:'w2',place:'בטן שמאל',zone:'abdomen',bleeding:true,known:false,treated:false}]},
+ {mech:'תאונת דרכים / התהפכות',visible:'הפצוע חיוור, ללא דימום חיצוני משמעותי שנראה מיד.',wounds:[
+  {id:'w1',place:'גב תחתון',zone:'back',bleeding:true,known:false,treated:false}]}
+];
+
+function start(role){
+ const x=structuredClone(pick(templates));
+ S={role,time:0,join:540,phase:role==='team'?'שטח':'נאפ״ל',location:role==='team'?'שטח':'נאפ״ל',
+  mech:x.mech,wounds:x.wounds,visible:x.visible,exposed:false,position:'שכיבה',conscious:true,
+  shock:2,resp:2,iv:0,requests:[],actions:[],lastVitals:null,
+  inv:{tq:2,packing:2,bandage:2,iv:2},soldiers:[{busy:false,task:null}],ended:false};
+ show('sim'); log(`מנגנון: ${S.mech}. ${S.visible} הפצוע בהכרה ומגיב.`);
+ render();
+}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$('#'+id).classList.add('active')}
+function log(txt){S.actions.push({t:S.time,txt});$('#log').innerHTML=S.actions.map(e=>`<div class="entry"><span class="t">${fmt(e.t)}</span>${e.txt}</div>`).join('');$('#log').scrollTop=99999}
+function activeBleeds(){return S.wounds.filter(w=>w.bleeding).length}
+function evolve(sec){
+ const mins=sec/60, n=activeBleeds();
+ S.shock+=n*.22*mins; S.resp+=S.wounds.some(w=>w.zone==='chest')?.09*mins:0;
+ if(S.shock>5.3)S.conscious=false;
+ S.time+=sec;
+ if(S.role==='team'&&S.time>=S.join&&!S.ended){S.time=S.join;end('התאג״ד חבר אליכם והפצוע הועבר להמשך טיפול.')}
+}
+function observable(){
+ let a=[];
+ a.push(S.conscious?'הפצוע בהכרה ומגיב.':'הפצוע אינו בהכרה.');
+ if(S.resp>3.4)a.push('הנשימה נראית מאומצת ומהירה.'); else if(S.resp>2)a.push('הנשימה נראית מהירה.');
+ const knownActive=S.wounds.filter(w=>w.known&&w.bleeding);
+ if(knownActive.length)a.push('דימום פעיל: '+knownActive.map(w=>w.place).join(', ')+'.');
+ const controlled=S.wounds.filter(w=>w.known&&!w.bleeding);
+ if(controlled.length)a.push('דימום שנעצר: '+controlled.map(w=>w.place).join(', ')+'.');
+ return a.join(' ');
+}
+function render(){
+ if(!S)return; $('#clock').textContent=fmt(S.time);$('#phase').textContent=S.location;
+ $('#picture').textContent=observable();
+ $('#known').innerHTML=S.wounds.filter(w=>w.known).map(w=>`<span class="tag">${w.place}: ${w.bleeding?'דימום פעיל':'דימום נעצר'}</span>`).join('');
+ $('#eta').textContent=S.role==='team'?`חבירת תאג״ד בעוד ${fmt(Math.max(0,S.join-S.time))}`:'מסלול תאג״ד';
+ renderMain();
+}
+function renderMain(){
+ const box=$('#cards'); box.innerHTML='';
+ const add=(label,fn)=>{let b=document.createElement('button');b.className='cardbtn';b.textContent=label;b.onclick=fn;box.appendChild(b)};
+ if(S.wounds.some(w=>w.known&&w.bleeding))add('🩸 עצירת דימום',bleedMenu);
+ add('👕 הפשטה וסריקה',expose);
+ add('🫀 מדדים',vitalsMenu);
+ if(S.role==='team'&&S.location==='שטח')add('🚑 גרירה לנאפ״ל',drag);
+ if(S.location==='נאפ״ל')add('🛏️ מנח פצוע',positionMenu);
+ if(S.location==='נאפ״ל')add('💉 פתיחת וריד',openIV);
+ if(S.role==='team')add('📡 בקשות מהתאג״ד',requestMenu);
+ add('🧑‍🤝‍🧑 לוחם',soldierMenu);
+ add('⏱️ המתנה',waitMenu);
+}
+function sheet(title,items){
+ $('#sheetTitle').textContent=title;const g=$('#sheetGrid');g.innerHTML='';
+ items.forEach(([label,fn,disabled])=>{let b=document.createElement('button');b.className='cardbtn';b.textContent=label;b.disabled=!!disabled;b.onclick=()=>{closeSheet();fn()};g.appendChild(b)});
+ $('#modal').classList.remove('hidden');
+}
+function closeSheet(){$('#modal').classList.add('hidden')}
+function act(sec,text,after){
+ evolve(sec); if(S.ended)return; if(after)after(); log(text); log('תמונת מצב: '+observable());render()
+}
+function bleedMenu(){
+ const wounds=S.wounds.filter(w=>w.known&&w.bleeding);
+ sheet('באיזה דימום לטפל?',wounds.map(w=>[w.place,()=>methodMenu(w)]));
+}
+function methodMenu(w){
+ sheet(`עצירת דימום — ${w.place}`,[
+  [`חוסם עורקים (${S.inv.tq})`,()=>hemostasis(w,'tq'),S.inv.tq<1],
+  [`פקינג (${S.inv.packing})`,()=>hemostasis(w,'packing'),S.inv.packing<1],
+  [`תחבושת אישית (${S.inv.bandage})`,()=>hemostasis(w,'bandage'),S.inv.bandage<1]
+ ]);
+}
+function hemostasis(w,m){
+ const names={tq:'חוסם עורקים',packing:'פקינג',bandage:'תחבושת אישית'};
+ S.inv[m]--; const correct=(w.zone==='limb'&&m==='tq')||(w.zone==='junction'&&m==='packing');
+ act(m==='tq'?15:m==='packing'?45:30,`${names[m]} בוצע על ${w.place}. ${correct?'הדימום נעצר.':'הדימום עדיין פעיל.'}`,()=>{if(correct)w.bleeding=false});
+}
+function expose(){
+ if(S.exposed){log('הפצוע כבר הופשט ונסרק.');return}
+ act(45,'בוצעה הפשטה מלאה וסריקת דימומים.',()=>{
+  S.exposed=true;S.wounds.forEach(w=>w.known=true);
+ });
+}
+function vitalsMenu(){
+ sheet('מדדים',[
+  ['לקיחת מדדים מלאה',()=>vitals('all')],
+  ['דופק',()=>vitals('pulse')],['סטורציה',()=>vitals('spo2')],
+  ['לחץ דם',()=>vitals('bp')],['איכות נשימה',()=>vitals('resp')],
+  ['הכרה',()=>vitals('con')]
+ ]);
+}
+function values(){
+ const pulse=Math.min(165,Math.round(82+S.shock*12)),spo=Math.max(78,Math.round(98-S.resp*2));
+ const sys=Math.max(65,Math.round(124-S.shock*10));
+ return {pulse:`${pulse} לדקה, ${S.shock>=4?'רדיאלי לא נימוש':S.shock>=2.7?'רדיאלי חלש':'רדיאלי נימוש'}`,
+  spo:`${spo}%`,bp:`${sys}/${Math.max(40,Math.round(sys*.62))}`,
+  resp:S.resp>3.4?'מהירה ושטחית עם מאמץ':'מהירה, ללא מאמץ בולט',
+  con:S.conscious?'בהכרה ומגיב':'לא בהכרה'};
+}
+function vitals(k){
+ const v=values(),map={pulse:'דופק',spo:'סטורציה',bp:'לחץ דם',resp:'נשימה',con:'הכרה'};
+ let text,dur;
+ if(k==='all'){text=`דופק: ${v.pulse} | סטורציה: ${v.spo} | ל״ד: ${v.bp} | נשימה: ${v.resp} | הכרה: ${v.con}`;dur=45;S.lastVitals=v}
+ else{text=`${map[k]}: ${v[k]}`;dur=k==='bp'?30:12}
+ act(dur,text);
+}
+function drag(){act(70,'הפצוע הועבר לנאפ״ל.',()=>{S.location='נאפ״ל';S.phase='נאפ״ל'})}
+function positionMenu(){
+ sheet('מנח פצוע',[
+  ['ישיבה',()=>setPos('ישיבה')],['שכיבה',()=>setPos('שכיבה')],['חש״י',()=>setPos('חש״י')]
+ ]);
+}
+function setPos(p){
+ if(p==='ישיבה'&&!S.conscious){act(8,'ניסיון להושיב את הפצוע — הפצוע אינו מסוגל לשמור על ישיבה עצמאית.');return}
+ act(10,`הפצוע הועבר למנח ${p}.`,()=>{S.position=p;if(p==='שכיבה'&&S.resp>2)S.resp+=.35;if(p==='ישיבה'&&S.conscious&&S.resp>2)S.resp=Math.max(1,S.resp-.25)});
+}
+function openIV(){
+ if(S.inv.iv<1){log('אין ערכה נוספת לפתיחת וריד.');return}
+ if(S.iv>=2){log('כבר קיימות שתי גישות ורידיות.');return}
+ S.inv.iv--;act(45,`הושגה גישה ורידית. סה״כ גישות: ${S.iv+1}.`,()=>S.iv++);
+}
+function requestMenu(){
+ sheet('בקשות מהתאג״ד',[
+  ['חמצן',()=>request('חמצן')],['דם / פלזמה',()=>request('דם / פלזמה')],
+  ['אינטובציה',()=>request('אינטובציה')],['קוניוטומיה',()=>request('קוניוטומיה')]
+ ]);
+}
+function request(x){act(8,`בקשה ל${x} הועברה לתאג״ד.`,()=>S.requests.push({t:S.time,x}))}
+function soldierMenu(){
+ const sol=S.soldiers[0];
+ sheet('לוחם מסייע',[
+  ['לדבר עם הפצוע ולהעסיק אותו',()=>{if(sol.busy){log('הלוחם כבר עסוק.');return} sol.busy=true;sol.task='שיחה';act(5,'הלוחם נשאר לצד הפצוע, מדבר איתו ומעסיק אותו.')}],
+  ['שחרר ממשימה',()=>{sol.busy=false;sol.task=null;log('הלוחם פנוי כעת.');render()},!sol.busy]
+ ]);
+}
+function waitMenu(){
+ sheet('המתנה',[
+  ['30 שניות',()=>wait(30)],['דקה',()=>wait(60)],
+  ['עד חבירת התאג״ד',()=>wait(Math.max(0,S.join-S.time)),S.role!=='team']
+ ]);
+}
+function band(){return (S.conscious?0:3)+(S.resp>3.4?2:0)+(activeBleeds()?1:0)}
+function wait(total){
+ let passed=0,old=band();
+ while(passed<total&&!S.ended){
+  let d=Math.min(15,total-passed);evolve(d);passed+=d;if(S.ended)return;
+  let now=band();if(now>old){log(`ההמתנה נעצרה לאחר ${fmt(passed)} עקב שינוי נראה לעין במצב הפצוע.`);log('תמונת מצב: '+observable());render();return}
+ }
+ log(`המתנה של ${fmt(total)} הסתיימה.`);log('תמונת מצב: '+observable());render();
+}
+function end(reason){S.ended=true;log(reason);render();setTimeout(debrief,80)}
+function debrief(){
+ show('debrief');let score=70;
+ const known=S.wounds.every(w=>w.known),controlled=S.wounds.filter(w=>['limb','junction'].includes(w.zone)).every(w=>!w.bleeding);
+ if(controlled)score+=12;else score-=15;if(known)score+=6;if(S.lastVitals)score+=5;
+ if(S.shock>=4&&S.iv>=2)score+=5;else if(S.shock>=4&&S.iv<2)score-=5;
+ score=Math.max(0,Math.min(100,score));$('#score').textContent=score;
+ let notes=[];
+ notes.push(controlled?'מקורות הדימום שניתנים לשליטה טופלו.':'נשאר מקור דימום שניתן היה לטפל בו.');
+ notes.push(known?'בוצעה הפשטה וסריקה.':'לא בוצעה הפשטה וסריקה מלאה.');
+ if(S.shock>=4)notes.push(`בסיום הפצוע במצב הלם עמוק; נפתחו ${S.iv} גישות ורידיות.`);
+ if(S.requests.length)notes.push('בקשות לתאג״ד: '+S.requests.map(r=>`${r.x} (${fmt(r.t)})`).join(', ')+'.');
+ $('#review').innerHTML=notes.map(x=>`<div class="entry">${x}</div>`).join('');
+}
+$('#team').onclick=()=>start('team');$('#tagad').onclick=()=>start('tagad');
+$('#closeSheet').onclick=closeSheet;$('#again').onclick=()=>start(S.role);$('#homeBtn').onclick=()=>{S=null;show('home')};
+})();
+</script></body></html>
