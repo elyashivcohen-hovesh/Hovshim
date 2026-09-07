@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="סימולטור טראומה דינמי לחובש צוותי ולחובש תאג״ד">
-<title>סימולטור חובשים גדוד 101 — V4.1.1</title>
+<title>סימולטור חובשים גדוד 101 — V4.2.0</title>
   <style>
     :root{--bg:#edf1f2;--card:#fff;--ink:#172126;--muted:#65737a;--line:#d6dfe2;--accent:#126b5b;--accent2:#0b4e43;--bad:#9c2d2d;--good:#176b45;--warn:#8a5a00}
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}button{font:inherit}.app{max-width:820px;margin:auto;min-height:100vh}.screen{display:none}.screen.active{display:block}
@@ -36,18 +36,21 @@ body.inSim40 #modal.hidden{display:none}body.inSim40 #modal .sheet{max-height:no
 body.inSim40 #modal .sheetgrid{grid-template-columns:1fr}body.inSim40 #modal .sheethead{position:static}body.inSim40 #modal .cardbtn{min-height:48px}.ivBadge41{pointer-events:none}.ivBadge41 text{fill:#e9ffff;font-size:7px;font-weight:bold;text-anchor:middle}.ivBadge41 .ivTape{fill:#e5ddd0;stroke:#746b60;stroke-width:.8}.ivBadge41 .ivHub{fill:#31a8b8;stroke:#e9ffff;stroke-width:.8}.ivBadge41 .ivTube{fill:none;stroke:#62d4de;stroke-width:1.5}.woundMarker.selected41 .markerCore{stroke:#ffdf85;stroke-width:4}.receipt41{padding:8px 10px;margin-top:8px;border-radius:8px;background:#1a3945;font-size:13px;color:#dfefef}
 body.inSim40 #sim main{padding-bottom:20px}body.inSim40 #cards{position:static;inset:auto;transform:none;width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;z-index:auto;background:transparent;padding:0;border:0;backdrop-filter:none}body.inSim40 #cards .cardbtn{min-height:64px;padding:10px;font-size:14px;border-radius:14px;background:var(--card)}
 </style>
+<style>
+.actionSlot42{grid-column:1/-1;min-width:0}.actionSlot42:empty{display:none}#cards .chosen42{outline:2px solid #8bdfce;outline-offset:1px}body.inSim40 #modal{min-width:0;margin:8px 0}body.inSim40 #modal .sheet{box-sizing:border-box}.back42{min-height:38px!important;min-width:64px;padding:6px 10px!important;flex-shrink:0}.sheethead h3{flex:1;margin:6px 10px}.back42.hidden{display:none}.woundContext42{padding:10px;background:#27464b;border-inline-start:3px solid #ffdf85;border-radius:8px;font-size:13px;margin:8px 0;line-height:1.6}.woundContext42.hidden{display:none}.actionFeedback42{font-size:12px;line-height:1.5;padding:6px 8px;background:#214439;color:#e0f9ed;border-radius:8px;min-height:30px;margin-top:6px}.actionFeedback42[data-kind=info]{background:#243e50;color:#e4edf6}.actionFeedback42:empty{display:none}#actionReceipt{display:none}.evidence42{margin:8px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden}.evidence42 summary{padding:10px!important;line-height:1.6}.evidence42 summary small{display:block;color:var(--muted);font-size:12px}.evidence42>div{padding:12px;background:#142836;line-height:1.7}.evidence42:not(.correct){border-inline-start:3px solid #e6bc70}.knowledge42{font-size:13px;color:#d4e5eb;border-top:1px solid var(--line);margin-top:8px;padding-top:8px}.scoreMath42{font-size:13px;color:var(--muted);line-height:1.7}.reportTable42{overflow-x:auto;margin-top:12px}.reportTable42 table{border-collapse:collapse;width:100%;font-size:12px}.reportTable42 th,.reportTable42 td{border:1px solid var(--line);padding:8px;text-align:right;min-width:100px;vertical-align:top}.reportTable42 caption{text-align:right;padding:8px}.cap summary{cursor:pointer}.woundMarker:focus-visible{outline:2px solid #ffdf85}.sheetgrid .cardbtn{white-space:normal;line-height:1.6}.actionSlot42 #modal .sheetgrid{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:600px){.actionSlot42 #modal .sheetgrid{grid-template-columns:1fr}.actionFeedback42{font-size:11px}.sheethead h3{font-size:16px}.evidence42 summary small{font-size:11px}}
+</style>
 </head>
 <body>
 <div id="deathOverlay" class="deathOverlay hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="deathTitle"><h2 id="deathTitle">האירוע הסתיים</h2><p>הפצוע מת בסימולציה בעקבות דימום שלא נעצר בזמן. בעוד רגע נעבור לתחקיר ההחלטות.</p><button id="deathContinue">מעבר לתחקיר</button></div>
 <div class="app">
   <section id="home" class="screen active">
-    <header><div><div class="brand">סימולטור חובשים גדוד 101</div><div class="ver">V4.1.1</div></div></header>
+    <header><div><div class="brand">סימולטור חובשים גדוד 101</div><div class="ver">V4.2.0</div></div></header>
     <main><div class="panel hero"><h1>סימולטור טראומה</h1><p class="muted">הזמן מתקדם ברצף, כל נפגע מתפתח בנפרד והחלטות מינון משפיעות על מצבו.</p><div class="roles"><button id="team" class="cardbtn primary">חובש צוותי<br><small>תרחיש אקראי</small></button><button id="tagad" class="cardbtn primary">חובש תאג״ד<br><small>תרחיש אקראי</small></button><button id="mciBtn" class="cardbtn secondary">🚨 אירוע רב־נפגעים מלא</button><button id="instructorBtn" class="cardbtn secondary">🎛️ מצב מדריך</button><button id="lab" class="cardbtn secondary wide">🧪 מעבדת תרחישים ובדיקות</button></div><div id="homeStats" class="meta"></div><p class="note"><span class="liveDot"></span>השעון ממשיך גם בזמן פתיחת חלוניות. מידע שלא נבדק לא יוצג.</p><p class="disclaimer">כלי אימון משלים בלבד. מינוני התרופות במנוע מבוססים על ספר הטראומה והרפואה המבצעית 2026 ואינם תחליף לפרוטוקול, הכשרה או הוראת מטפל בכיר.</p></div></main>
   </section>
-  <section id="sim" class="screen"><header class="simHeader"><div class="headerLine"><div><div class="brand">סימולטור חובשים</div><div id="phase" class="phase"></div></div><div id="nextEvent" class="nextEvent"></div><div id="clock" class="clock">00:00</div></div><div id="mechanism41" class="mechanism41"></div><div id="hudVitals" class="hudVitals"><span class="hudEmpty">מדדים טרם נלקחו</span></div><div id="hudAlerts" class="hudAlerts"></div></header><main><div class="panel"><div class="overviewGrid"><div><h3>תמונת מצב</h3><div id="picture" class="status"></div><div id="behavior" class="patientBehavior"></div><div id="known" class="tags"></div><div id="eta" class="eta"></div></div><div><h3>מפת פציעות</h3><div id="bodyMap" class="bodyMap"></div><div id="treatmentSlot41"></div></div></div></div><div id="packingAlert" class="panel alert hidden"><h3>תהליך פקינג</h3><div id="packingText" class="status"></div><div class="progress"><span id="packingBar" style="width:0"></span></div></div><div id="reassessAlert" class="panel alert hidden"><h3>נדרשת הערכה חוזרת</h3><div id="reassessText" class="status"></div></div><div class="panel"><h3>משימות פעילות</h3><div class="mission40"><button id="soldiers40" class="cardbtn">ניהול לוחמים</button><button id="decision40" class="cardbtn">בחירת הפעולה הבאה</button></div><div id="tasks40" aria-live="polite"></div><div id="personnel" class="status"></div></div><div class="panel"><div class="actionTitle"><h3>פעולות</h3><span class="inventoryBadge">הפעולות מסודרות לפי תחום</span></div><div id="cards" class="cards"></div><div class="utility"><button id="inventoryQuick" class="cardbtn">מלאי</button><button id="waitQuick" class="cardbtn">המתנה</button></div></div><div id="log" hidden></div></main></section>
-  <section id="instructor" class="screen"><header><div class="brand">מצב מדריך · V4.1.1</div></header><main><div class="panel"><h2>בניית תרחיש</h2><div class="formgrid"><label>תפקיד<select id="customRole"><option value="team">חובש צוותי</option><option value="tagad">חובש תאג״ד</option></select></label><label>פציעה מרכזית<select id="customInjury"><option value="axilla">דימום בבית שחי</option><option value="dualLeg">דימום בירך ובשוק באותה גפה</option><option value="shock">הלם דימומי עם פגיעת גו</option><option value="chest">פגיעת חזה מתדרדרת</option><option value="airway">פגיעת פנים ונתיב אוויר</option></select></label><label>הסתרת הפציעה<select id="customHidden"><option value="yes">נסתרת עד סריקה</option><option value="no">גלויה</option></select></label><label>מסייעים<input id="customSoldiers" type="number" min="0" max="4" value="2"></label><label>זמן לפינוי/חבירה בדקות<input id="customEvac" type="number" min="2" max="30" value="8"></label><label>דרגת קושי<select id="customDifficulty"><option value="test">מבחן</option><option value="learning">לימוד</option><option value="hard">קשה</option></select></label></div><div class="roles" style="margin-top:14px"><button id="customStart" class="cardbtn primary">התחל תרחיש</button><button id="customBack" class="cardbtn">חזרה</button></div></div></main></section>
+  <section id="sim" class="screen"><header class="simHeader"><div class="headerLine"><div><div class="brand">סימולטור חובשים</div><div id="phase" class="phase"></div></div><div id="nextEvent" class="nextEvent"></div><div id="clock" class="clock">00:00</div></div><div id="mechanism41" class="mechanism41"></div><div id="hudVitals" class="hudVitals"><span class="hudEmpty">מדדים טרם נלקחו</span></div><div id="actionFeedback42" class="actionFeedback42" role="status" aria-live="polite" aria-atomic="true"></div><div id="hudAlerts" class="hudAlerts"></div></header><main><div class="panel"><div class="overviewGrid"><div><h3>תמונת מצב</h3><div id="picture" class="status"></div><div id="behavior" class="patientBehavior"></div><div id="known" class="tags"></div><div id="eta" class="eta"></div></div><div><h3>מפת פציעות</h3><div id="bodyMap" class="bodyMap"></div><div id="treatmentSlot41"></div></div></div></div><div id="packingAlert" class="panel alert hidden"><h3>תהליך פקינג</h3><div id="packingText" class="status"></div><div class="progress"><span id="packingBar" style="width:0"></span></div></div><div id="reassessAlert" class="panel alert hidden"><h3>נדרשת הערכה חוזרת</h3><div id="reassessText" class="status"></div></div><div class="panel"><h3>משימות פעילות</h3><div class="mission40"><button id="soldiers40" class="cardbtn">ניהול לוחמים</button><button id="decision40" class="cardbtn">בחירת הפעולה הבאה</button></div><div id="tasks40" aria-live="polite"></div><div id="personnel" class="status"></div></div><div class="panel"><div class="actionTitle"><h3>פעולות</h3><span class="inventoryBadge">הפעולות מסודרות לפי תחום</span></div><div id="cards" class="cards"></div><div class="utility"><button id="inventoryQuick" class="cardbtn">מלאי</button><button id="waitQuick" class="cardbtn">המתנה</button></div></div><div id="log" hidden></div></main></section>
+  <section id="instructor" class="screen"><header><div class="brand">מצב מדריך · V4.2.0</div></header><main><div class="panel"><h2>בניית תרחיש</h2><div class="formgrid"><label>תפקיד<select id="customRole"><option value="team">חובש צוותי</option><option value="tagad">חובש תאג״ד</option></select></label><label>פציעה מרכזית<select id="customInjury"><option value="axilla">דימום בבית שחי</option><option value="dualLeg">דימום בירך ובשוק באותה גפה</option><option value="shock">הלם דימומי עם פגיעת גו</option><option value="chest">פגיעת חזה מתדרדרת</option><option value="airway">פגיעת פנים ונתיב אוויר</option></select></label><label>הסתרת הפציעה<select id="customHidden"><option value="yes">נסתרת עד סריקה</option><option value="no">גלויה</option></select></label><label>מסייעים<input id="customSoldiers" type="number" min="0" max="4" value="2"></label><label>זמן לפינוי/חבירה בדקות<input id="customEvac" type="number" min="2" max="30" value="8"></label><label>דרגת קושי<select id="customDifficulty"><option value="test">מבחן</option><option value="learning">לימוד</option><option value="hard">קשה</option></select></label></div><div class="roles" style="margin-top:14px"><button id="customStart" class="cardbtn primary">התחל תרחיש</button><button id="customBack" class="cardbtn">חזרה</button></div></div></main></section>
   <section id="mci" class="screen"><header><div><div class="brand">אירוע רב־נפגעים</div><div class="ver">מיון ראשוני</div></div><div id="mciClock" class="clock">00:00</div></header><main><div class="panel"><h3>משימה</h3><div class="status">בחר סדר גישה, בצע פעולה מצילת חיים קצרה במידת הצורך וסווג כל נפגע.</div><div id="mciResources" class="statstrip"></div></div><div id="mciCards"></div><div class="roles"><button id="mciFinish" class="cardbtn primary wide">סיום ותחקיר</button><button id="mciHome" class="cardbtn wide">חזרה למסך הראשי</button></div></main></section>
-  <section id="debrief" class="screen"><header><div class="brand">דיבריף V4.1.1</div></header><main><div class="panel"><div class="score"><span id="score">0</span><small style="font-size:18px">/100</small></div><div id="outcome" style="text-align:center;font-weight:800"></div><div id="scenarioMeta" class="meta"></div><div id="caps"></div></div><div class="panel"><h2>נקודות מפתח</h2><div id="insights" class="insights"></div></div><div class="panel"><h2>פירוט הניקוד</h2><div id="breakdown" class="breakdown"></div></div><div class="panel"><h2>ציר זמן מנותח</h2><div id="review"></div></div><div class="panel"><h2>מה קרה לפצוע</h2><div id="physReview"></div></div><div class="roles"><button id="again" class="cardbtn primary">תרחיש נוסף</button><button id="homeBtn" class="cardbtn">מסך ראשי</button></div></main></section>
+  <section id="debrief" class="screen"><header><div class="brand">דיבריף V4.2.0</div></header><main><div class="panel"><div class="score"><span id="score">0</span><small style="font-size:18px">/100</small></div><div id="outcome" style="text-align:center;font-weight:800"></div><div id="scenarioMeta" class="meta"></div><div id="caps"></div></div><div class="panel"><h2>נקודות מפתח</h2><div id="insights" class="insights"></div></div><div class="panel"><h2>פירוט הניקוד</h2><div id="breakdown" class="breakdown"></div></div><div class="panel"><h2>ציר זמן מנותח</h2><div id="review"></div></div><div class="panel"><h2>מה קרה לפצוע</h2><div id="physReview"></div></div><div class="roles"><button id="again" class="cardbtn primary">תרחיש נוסף</button><button id="homeBtn" class="cardbtn">מסך ראשי</button></div></main></section>
   <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet"><div class="sheethead"><h3 id="sheetTitle"></h3><button id="closeSheet" class="close" aria-label="סגירה">×</button></div><p id="sheetNote" class="sheetnote"></p><div id="sheetGrid" class="sheetgrid"></div></div></div>
 </div>
 <script>
@@ -66,7 +69,7 @@ const FIXED_DOSES={txa:{label:'הקסאקפרון (TXA)',min:1000,max:1000},keta
 const RARE_AIRWAY_PROCEDURE_RATE=.035;
 const sites=[{p:'ירך ימין',z:'limb',f:1,limb:'legR',seg:2},{p:'ירך שמאל',z:'limb',f:1,limb:'legL',seg:2},{p:'שוק ימין',z:'limb',f:1,limb:'legR',seg:1},{p:'שוק שמאל',z:'limb',f:1,limb:'legL',seg:1},{p:'אמה ימין',z:'limb',f:1,limb:'armR',seg:1},{p:'אמה שמאל',z:'limb',f:1,limb:'armL',seg:1},{p:'מפשעה ימין',z:'junction',f:1},{p:'מפשעה שמאל',z:'junction',f:1},{p:'בית שחי ימין',z:'junction',f:1},{p:'בית שחי שמאל',z:'junction',f:1},{p:'חזה ימין',z:'chest',f:1},{p:'חזה שמאל',z:'chest',f:1},{p:'בטן',z:'abdomen',f:1},{p:'גב עליון ימין',z:'back',f:0},{p:'גב עליון שמאל',z:'back',f:0}];
 function wound(site,o={}){let ext=['limb','junction'].includes(site.z),chest=site.z==='chest';return{id:o.id??0,p:site.p,z:site.z,front:!!site.f,limb:site.limb||null,seg:site.seg||0,known:false,knownAt:null,active:ext,rate:ext?(site.z==='junction'?pick([1.2,1.5,1.8]):pick([.8,1.3,1.8])):0,internal:(chest||site.z==='abdomen'||site.z==='back')?pick([.25,.45,.7]):0,packing:0,packable:site.z==='junction',controlledBy:null,controlledAt:null,verified:false,chestThreat:chest&&chance(.5),chestProgress:0,airway:false,airwayProcedure:null,unconscious:false,penetrating:false,...o}}
-function randomScenario(role){for(let q=0;q<80;q++){let mech=pick(mechanisms),n=1+Math.floor(rng()*3),chosen=[];while(chosen.length<n){let x=pick(sites);if(!chosen.some(y=>y.p===x.p))chosen.push(x)}let wounds=chosen.map((x,i)=>wound(x,{id:i,active:['limb','junction'].includes(x.z)?chance(.88):false,penetrating:['ירי','פיצוץ ורסיסים','דקירה'].includes(mech)}));if(!wounds.some(w=>w.active||w.internal>.4||w.chestThreat)){let candidate=wounds.find(w=>['limb','junction'].includes(w.z));if(candidate)candidate.active=true;else wounds[0].internal=.7}wounds.filter(w=>w.front&&(w.active||w.z==='chest')&&chance(.68)).forEach(w=>w.known=true);if(role==='tagad'&&chance(RARE_AIRWAY_PROCEDURE_RATE)){let procedure=chance(.14)?'cric':'tube',unconscious=chance(.45);wounds.push(wound({p:'פגיעת פנים/צוואר',z:'airway',f:1},{id:99,known:chance(.6),active:false,rate:0,internal:0,airway:true,airwayProcedure:procedure,unconscious,penetrating:true}))}let sig=[mech,wounds.map(w=>w.z).sort().join(','),wounds.filter(w=>w.known).map(w=>w.z).sort().join(',')].join('|');if(recent.includes(sig))continue;recent.push(sig);recent=recent.slice(-6);return{name:'תרחיש אקראי',mech,wounds,soldiers:Math.floor(rng()*3),join:420+Math.floor(rng()*300),travel:300+Math.floor(rng()*360),heloWait:180+Math.floor(rng()*300),injuryAge:pick([300,900,1800]),bloodLoss:pick([500,850,1250,1650]),temp:36.5-rng()*.4,baseResp:14+Math.floor(rng()*7),pain:pick([4,6,7,8,9]),personality:pick(['משתף פעולה','חרד','קולני','שקט ומכונס'])}}}
+function randomScenario(role){for(let q=0;q<80;q++){let mech=pick(mechanisms),n=1+Math.floor(rng()*3),chosen=[];while(chosen.length<n){let x=pick(sites);if(!chosen.some(y=>y.p===x.p))chosen.push(x)}let wounds=chosen.map((x,i)=>wound(x,{id:i,active:['limb','junction'].includes(x.z)?chance(.88):false,penetrating:['ירי','פיצוץ ורסיסים','דקירה'].includes(mech)}));if(!wounds.some(w=>w.active||w.internal>.4||w.chestThreat)){let candidate=wounds.find(w=>['limb','junction'].includes(w.z));if(candidate)candidate.active=true;else wounds[0].internal=.7}wounds.filter(w=>w.front&&(w.active||w.z==='chest')&&chance(.68)).forEach(w=>w.known=true);if(role==='tagad'&&chance(RARE_AIRWAY_PROCEDURE_RATE)){let procedure=chance(.14)?'cric':'tube',unconscious=chance(.45);wounds.push(wound({p:'פגיעת פנים/צוואר',z:'airway',f:1},{id:99,known:chance(.6),active:false,rate:0,internal:0,airway:true,airwayProcedure:procedure,unconscious,penetrating:true}))}if(!scenarioFitsEquipment42(role,wounds))continue;let sig=[mech,wounds.map(w=>w.z).sort().join(','),wounds.filter(w=>w.known).map(w=>w.z).sort().join(',')].join('|');if(recent.includes(sig))continue;recent.push(sig);recent=recent.slice(-6);return{name:'תרחיש אקראי',mech,wounds,soldiers:Math.floor(rng()*3),join:420+Math.floor(rng()*300),travel:300+Math.floor(rng()*360),heloWait:180+Math.floor(rng()*300),injuryAge:pick([300,900,1800]),bloodLoss:pick([500,850,1250,1650]),temp:36.5-rng()*.4,baseResp:14+Math.floor(rng()*7),pain:pick([4,6,7,8,9]),personality:pick(['משתף פעולה','חרד','קולני','שקט ומכונס'])}}}
 const siteByName=name=>sites.find(x=>x.p===name);
 const PRESETS={
  axilla:{label:'דימום נסתר בבית השחי',role:'tagad',make:()=>({name:'דימום נסתר בבית השחי',mech:'ירי',wounds:[wound(siteByName('בית שחי ימין'),{id:1,known:false,active:true,rate:1.8,penetrating:true})],soldiers:1,travel:240,heloWait:180,bloodLoss:900,temp:36.3,baseResp:19})},
@@ -424,8 +427,8 @@ renderHud=function(){hud39Final();if(!S||S.mci)return;let missing=[['con','הכ�
 const assess39Final=assess39;
 assess39=function(){let a=assess39Final();let pain=a.items.find(i=>i.label==='הערכת כאב');if(pain&&S.painUnavailable40)pain.actual='תועד שלא ניתן לקבל דירוג עצמי';let rpt=a.items.find(i=>i.label==='דיווח רפואי מלא');if(rpt){rpt.status=S.handoffReported&&S.reportQuality===6?'correct':'missing';rpt.actual=S.handoffReported?`${S.reportQuality}/6 רכיבים מדויקים; הדיווח מתועד`:'לא נמסר'}let changed=reportChanged40();if(changed.length)a.items.push(assessmentItem('support','עדכון דיווח לאחר מידע חדש',true,'missing','הרכיבים שהשתנו: '+changed.map(k=>REPORT_FIELDS.find(f=>f[0]===k)[1]).join(', '),S.handoffAt,'הדיווח הקודם נשמר; נדרש עדכון ממוקד',4));(S.decisions40||[]).filter(d=>!d.matches).slice(0,3).forEach(d=>a.items.push(assessmentItem('support','בחירת עדיפות: '+d.label,true,'priority','נבחרה עדיפות משנית ביחס לממצאים שנאספו',d.t,'החלטה נבחנת לפי המצב בזמן הבחירה',4)));a.earned=a.items.reduce((n,i)=>n+i.weight*({correct:1,late:.5}[i.status]||0),0);a.possible=a.items.reduce((n,i)=>n+i.weight,0);a.raw=Math.round(100*a.earned/a.possible);a.score=Math.min(a.raw,a.cap);a.groups.forEach(g=>g.items=a.items.filter(i=>i.group===g.key));return a};
 const debrief39Final=debrief;
-debrief=function(){debrief39Final();if(S.mci)return;$('#scenarioMeta').textContent='V4.1.1 · '+S.scenarioName;let a=assess39();$('#breakdown').innerHTML=a.groups.map(g=>`<details class="scoreRow"><summary>${g.key==='support'?'מסירה ותמיכה':g.key} · ${g.title}<span>${g.items.filter(i=>i.status==='correct').length}/${g.items.length}</span></summary><div>${g.items.map(i=>`<div class="decisionItem ${i.status}"><b>${esc(i.label)}</b><p>${esc(i.actual)}</p><small>זמן: ${i.time==null?'—':fmt(i.time)} · ${statusLabel39(i.status)} · ${esc(i.impact)}</small></div>`).join('')}</div></details>`).join('');$('#physReview').innerHTML+=(S.reportHistory40||[]).map((r,ix)=>`<details class="task40"><summary>דיווח ${ix+1} · ${fmt(r.t)}</summary>${r.fields.map(f=>`<div class="reportReview40"><b>${esc(f.label)} · ${f.correct?'תקין':f.missing?'חסר':'לא מדויק'}</b><div>${esc(f.text||'לא דווח')}</div>${f.correct?'':`<small>המידע שהיה זמין: ${esc(f.expected)}</small>`}</div>`).join('')}</details>`).join('');$('#physReview').innerHTML+=(S.decisions40||[]).map(d=>`<div class="entry">${fmt(d.t)} · ${esc(d.label)} · ${d.matches?'עדיפות מתאימה':'עדיפות משנית'}${d.performed?' · נרשמה פעולת המשך':''}</div>`).join('');$('#retryExact').onclick=retryExact;$('#exportIssue').onclick=exportIssue};
-exportIssue=function(){let note=typeof prompt==='function'?prompt('תאר בקצרה מה לא הסתדר. אין לכלול פרטים אישיים.',''):'';if(note===null)return;let payload={version:'4.1.1',note,role:S.role,difficulty:S.difficulty,initialScenario:S.initialScenario,actions:S.actions,decisionEvents:S.decisionEvents,reportHistory:S.reportHistory40,priorityChoices:S.decisions40,assessment:assess39(),criticalErrors:S.criticalErrors,report:S.reportSnapshot||null};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='simulator-issue-4.1.1.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+debrief=function(){debrief39Final();if(S.mci)return;$('#scenarioMeta').textContent='V4.2.0 · '+S.scenarioName;let a=assess39();$('#breakdown').innerHTML=a.groups.map(g=>`<details class="scoreRow"><summary>${g.key==='support'?'מסירה ותמיכה':g.key} · ${g.title}<span>${g.items.filter(i=>i.status==='correct').length}/${g.items.length}</span></summary><div>${g.items.map(i=>`<div class="decisionItem ${i.status}"><b>${esc(i.label)}</b><p>${esc(i.actual)}</p><small>זמן: ${i.time==null?'—':fmt(i.time)} · ${statusLabel39(i.status)} · ${esc(i.impact)}</small></div>`).join('')}</div></details>`).join('');$('#physReview').innerHTML+=(S.reportHistory40||[]).map((r,ix)=>`<details class="task40"><summary>דיווח ${ix+1} · ${fmt(r.t)}</summary>${r.fields.map(f=>`<div class="reportReview40"><b>${esc(f.label)} · ${f.correct?'תקין':f.missing?'חסר':'לא מדויק'}</b><div>${esc(f.text||'לא דווח')}</div>${f.correct?'':`<small>המידע שהיה זמין: ${esc(f.expected)}</small>`}</div>`).join('')}</details>`).join('');$('#physReview').innerHTML+=(S.decisions40||[]).map(d=>`<div class="entry">${fmt(d.t)} · ${esc(d.label)} · ${d.matches?'עדיפות מתאימה':'עדיפות משנית'}${d.performed?' · נרשמה פעולת המשך':''}</div>`).join('');$('#retryExact').onclick=retryExact;$('#exportIssue').onclick=exportIssue};
+exportIssue=function(){let note=typeof prompt==='function'?prompt('תאר בקצרה מה לא הסתדר. אין לכלול פרטים אישיים.',''):'';if(note===null)return;let payload={version:'4.2.0',note,role:S.role,difficulty:S.difficulty,initialScenario:S.initialScenario,actions:S.actions,decisionEvents:S.decisionEvents,reportHistory:S.reportHistory40,evidence:S.evidence42,taskCompletions:S.completions42,priorityChoices:S.decisions40,assessment:assess39(),criticalErrors:S.criticalErrors,report:S.reportSnapshot||null};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='simulator-issue-4.2.0.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 let menuSerial41=0,menuBuilder41=null,selectedWound41=null;
 const showBefore41=show;
 show=function(id){let modal=$('#modal');closeSheet();if(id==='sim'){$('#treatmentSlot41').appendChild(modal);modal.setAttribute('role','region');modal.setAttribute('aria-modal','false')}else{document.body.appendChild(modal);modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true')}return showBefore41(id)};
@@ -438,17 +441,268 @@ submitDose=function(...args){let count=S.draws.length,r=submitBefore41(...args);
 const bodyMenuBefore41=bodyWoundMenu;
 bodyWoundMenu=function(w){selectedWound41=w.id;bodyMenuBefore41(w);renderBodyMap()};
 const bodyRenderBefore41=renderBodyMap;
-renderBodyMap=function(){bodyRenderBefore41();let box=$('#bodyMap');if(S.iv>0&&S.bodyView!=='back'){let one='<g class="ivBadge41" aria-label="גישה ורידית בגומץ המרפק השמאלי"><title>גישה ורידית בגומץ המרפק</title><g transform="translate(31 108) rotate(12)"><rect class="ivTape" x="-7" y="-5" width="17" height="10" rx="3"/><rect class="ivHub" x="-1" y="-3" width="8" height="6" rx="2"/><path class="ivTube" d="M7 0 C15 0 15 9 21 10"/><text x="2" y="-8">IV</text></g></g>',two=S.iv>1?'<g class="ivBadge41" aria-label="גישה ורידית בגומץ המרפק הימני"><title>גישה ורידית שנייה בגומץ המרפק</title><g transform="translate(129 108) rotate(-12)"><rect class="ivTape" x="-10" y="-5" width="17" height="10" rx="3"/><rect class="ivHub" x="-7" y="-3" width="8" height="6" rx="2"/><path class="ivTube" d="M-7 0 C-15 0 -15 9 -21 10"/><text x="-2" y="-8">IV</text></g></g>':'';box.innerHTML=box.innerHTML.replace('</svg>',one+two+'</svg>')}document.querySelectorAll('[data-wound]').forEach(b=>{b.classList.toggle('selected41',String(selectedWound41)===b.dataset.wound);b.onclick=()=>{let w=S.wounds.find(w=>String(w.id)===b.dataset.wound);if(w)bodyWoundMenu(w)}});document.querySelectorAll('[data-body-view]').forEach(b=>b.onclick=()=>{S.bodyView=b.dataset.bodyView;renderBodyMap()})};
+renderBodyMap=function(){bodyRenderBefore41();let box=$('#bodyMap');if(S.iv>0&&S.bodyView!=='back'){let one='<g class="ivBadge41" aria-label="גישה ורידית בגומץ המרפק הימני"><title>גישה ורידית בגומץ המרפק</title><g transform="translate(31 108) rotate(12)"><rect class="ivTape" x="-7" y="-5" width="17" height="10" rx="3"/><rect class="ivHub" x="-1" y="-3" width="8" height="6" rx="2"/><path class="ivTube" d="M7 0 C15 0 15 9 21 10"/><text x="2" y="-8">IV</text></g></g>',two=S.iv>1?'<g class="ivBadge41" aria-label="גישה ורידית בגומץ המרפק השמאלי"><title>גישה ורידית שנייה בגומץ המרפק</title><g transform="translate(129 108) rotate(-12)"><rect class="ivTape" x="-10" y="-5" width="17" height="10" rx="3"/><rect class="ivHub" x="-7" y="-3" width="8" height="6" rx="2"/><path class="ivTube" d="M-7 0 C-15 0 -15 9 -21 10"/><text x="-2" y="-8">IV</text></g></g>':'';box.innerHTML=box.innerHTML.replace('</svg>',one+two+'</svg>')}document.querySelectorAll('[data-wound]').forEach(b=>{b.classList.toggle('selected41',String(selectedWound41)===b.dataset.wound);b.onclick=()=>{let w=S.wounds.find(w=>String(w.id)===b.dataset.wound);if(w)bodyWoundMenu(w)}});document.querySelectorAll('[data-body-view]').forEach(b=>b.onclick=()=>{S.bodyView=b.dataset.bodyView;renderBodyMap()})};
 const renderBefore41=render;
 render=function(){renderBefore41();if(!S||S.mci)return;$('#mechanism41').textContent=S.mech+' · '+S.loc+' · '+S.soldiers.length+' לוחמים מסייעים'};
 const startBefore41=start;
 start=function(...args){selectedWound41=null;let r=startBefore41(...args);closeSheet();render();return r};
-let instructorBrand=document.querySelector('#instructor .brand'),debriefBrand=document.querySelector('#debrief .brand'),bodyHeading=document.querySelector('#sim .overviewGrid>div:last-child h3');if(instructorBrand)instructorBrand.textContent='מצב מדריך · V4.1.1';if(debriefBrand)debriefBrand.textContent='דיבריף V4.1.1';if(bodyHeading)bodyHeading.textContent='דמות הפצוע';
+// V4.2: contextual cards, live workspaces and auditable scoring.
+function scenarioFitsEquipment42(role,wounds){
+  const kit=ROLE_EQUIPMENT[role],active=wounds.filter(w=>w.active),junctions=active.filter(w=>w.z==='junction');
+  if(junctions.length>kit.packing||junctions.length>kit.bandage)return false;
+  const limbs=[...new Set(active.filter(w=>w.z==='limb').map(w=>w.limb))];
+  const needsTq=limbs.filter(limb=>active.some(w=>w.z==='limb'&&w.limb===limb&&w.rate>.9));
+  if(needsTq.length>kit.tq)return false;
+  const dressingsNeeded=active.filter(w=>w.z==='limb'&&!needsTq.includes(w.limb));
+  const optional=limbs.filter(limb=>!needsTq.includes(limb)).map(limb=>dressingsNeeded.filter(w=>w.limb===limb).length).sort((a,b)=>b-a);
+  const remainingDressings=optional.slice(kit.tq-needsTq.length).reduce((n,x)=>n+x,0);
+  return junctions.length+remainingDressings<=kit.bandage;
+}
+let nav42={stack:[],frame:null,mode:'root',anchor:null,refreshing:false,signature:''};
+let actionDepth42=0,uiAction42=false;
+function panelVisible42(){return !$('#modal').classList.contains('hidden')}
+function notice42(message,kind='done'){
+  if(!S||S.mci||S.ended)return;
+  S.receipt42={t:S.time,message:String(message),kind};
+  const node=$('#actionFeedback42');node.textContent=fmt(S.time)+' · '+String(message).replace(/\s+/g,' ').slice(0,200);
+  node.dataset.kind=kind;
+}
+function ensurePanel42(){
+  if(!document.getElementById('back42')){let b=document.createElement('button');b.id='back42';b.className='cardbtn back42';b.textContent='חזרה';b.onclick=back42;document.querySelector('#modal .sheethead')?.prepend(b)}
+  if(!document.getElementById('woundContext42')){let n=document.createElement('div');n.id='woundContext42';n.className='woundContext42';document.querySelector('#modal .sheethead')?.after(n)}
+}
+function mountPanel42(){
+  if(!S||S.mci||!document.body.classList.contains('inSim40'))return;
+  const modal=$('#modal'),anchor=nav42.anchor;
+  if(anchor?.kind==='card'){
+    const box=$('#cards'),buttons=Array.from(box.children).filter(x=>x.tagName==='BUTTON');
+    let slot=document.getElementById('actionSlot42');if(!slot){slot=document.createElement('div');slot.id='actionSlot42';slot.className='actionSlot42'}
+    const end=Math.min(buttons.length-1,Math.floor(anchor.index/2)*2+1);
+    if(slot.previousElementSibling!==buttons[end]){if(buttons[end]?.after)buttons[end].after(slot);else box.appendChild(slot)}
+    if(modal.parentNode!==slot)slot.appendChild(modal);
+    buttons.forEach((b,i)=>{b.classList.toggle('chosen42',i===anchor.index&&panelVisible42());b.setAttribute('aria-expanded',String(i===anchor.index&&panelVisible42()));b.setAttribute('aria-controls','modal')});
+  }else if(anchor?.kind==='utility'){
+    let slot=document.getElementById('utilitySlot42');if(!slot){slot=document.createElement('div');slot.id='utilitySlot42';document.querySelector('#sim .utility')?.after(slot)}if(modal.parentNode!==slot)slot.appendChild(modal);
+  }else if(anchor?.kind==='tasks'){
+    let slot=document.getElementById('tasksSlot42');if(!slot){slot=document.createElement('div');slot.id='tasksSlot42';$('#tasks40').after?.(slot)}if(modal.parentNode!==slot)slot.appendChild(modal);
+  }else if(modal.parentNode!==$('#treatmentSlot41'))$('#treatmentSlot41').appendChild(modal);
+  updateWoundContext42();
+}
+function scrollPanel42(){
+  if(typeof window==='undefined'||!panelVisible42())return;
+  const r=$('#modal').getBoundingClientRect(),h=document.querySelector('.simHeader')?.getBoundingClientRect().height||0;
+  if(r.top<h+4||r.top>window.innerHeight-120)window.scrollTo({top:Math.max(0,window.scrollY+r.top-h-12),behavior:'auto'});
+}
+function openPanel42(fn,anchor){
+  nav42.stack=[];nav42.frame=null;nav42.mode='root';nav42.anchor=anchor;selectedWound41=null;
+  fn();mountPanel42();renderBodyMap();scrollPanel42();
+}
+function enterFrame42(frame){
+  let prev=nav42.frame;
+  if(nav42.mode==='child'&&prev&&prev.title!==frame.title){
+    let at=nav42.stack.findIndex(f=>f.title===frame.title);
+    if(at>=0)nav42.stack=nav42.stack.slice(0,at);else nav42.stack.push(prev);
+  }
+  nav42.frame=frame;nav42.mode='idle';
+}
+function updateBack42(){const b=document.getElementById('back42');if(b)b.classList.toggle('hidden',nav42.stack.length===0)}
+function back42(){
+  const frame=nav42.stack.pop();if(!frame)return;
+  nav42.mode='back';nav42.frame=null;
+  if(frame.owner)frame.owner();else sheet(frame.title,frame.items,frame.note);
+  updateBack42();scrollPanel42();
+}
+function panelSignature42(){
+  if(!S||S.mci)return'';
+  return JSON.stringify([S.loc,S.exposed,S.iv,S.oxygen,S.awPlaced,S.loaded,S.arrived,S.heloArrived,S.teamArrived,S.covered,S.stretcher,S.bloodUnits,S.inv,S.reassess,S.wounds.filter(w=>w.known).map(w=>[w.id,w.active,w.packing,w.verified,w.controlledBy]),S.soldiers.map(s=>[s.id,s.busy,s.task]),S.handoffAt]);
+}
+function refreshPanel42(force=false){
+  if(nav42.refreshing||actionDepth42||!panelVisible42()||S?.ended)return;
+  const signature=panelSignature42(),frame=nav42.frame;
+  if(!force&&signature===nav42.signature)return;
+  if(!frame?.owner||frame.kind==='dose'||/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||''))return;
+  nav42.refreshing=true;nav42.mode='refresh';
+  try{frame.owner();nav42.signature=signature}finally{nav42.refreshing=false}
+}
+sheet=function(title,items,note=''){
+  ensurePanel42();const owner=menuBuilder41,serial=++menuSerial41;
+  enterFrame42({title,items,note,owner,kind:'menu'});
+  $('#sheetTitle').textContent=title;$('#sheetNote').textContent=S?.qualification?'':note;
+  const grid=$('#sheetGrid');grid.innerHTML='';
+  items.forEach(([label,fn,disabled,extra])=>addCard(grid,label,()=>{
+    if(disabled)return;nav42.mode='child';uiAction42=true;
+    try{fn()}finally{uiAction42=false;if(nav42.mode==='child')nav42.mode='idle'}
+    if(menuSerial41===serial&&panelVisible42()&&!S?.ended){nav42.mode='refresh';if(owner)owner();else sheet(title,items,note)}
+    mountPanel42();updateBack42();
+  },extra||'',!!disabled));
+  $('#modal').classList.remove('hidden');nav42.signature=panelSignature42();updateBack42();mountPanel42();
+};
+const closeBefore42=closeSheet;
+closeSheet=function(){closeBefore42();nav42.stack=[];nav42.frame=null;nav42.mode='root';nav42.signature='';document.querySelectorAll('#cards .chosen42').forEach(b=>{b.classList.remove('chosen42');b.setAttribute('aria-expanded','false')})};
+// Keep the dose form itself intact while the live clock and background tasks advance.
+const doseBefore42=dosePrompt;
+dosePrompt=function(...args){
+  const old=nav42.frame;doseBefore42(...args);
+  if(old&&old.kind!=='dose')nav42.stack.push(old);
+  nav42.frame={title:$('#sheetTitle').textContent,kind:'dose',owner:null};nav42.mode='idle';updateBack42();mountPanel42();
+};
+cards=function(){
+  // Update existing buttons in place: moving an input out of the DOM loses keyboard focus.
+  const box=$('#cards'),known=S.wounds.some(w=>w.known&&w.active),packing=S.wounds.some(w=>w.known&&w.active&&w.packing>0&&w.packing<3),pending=S.reassess.vitals||S.reassess.bleed||(S.role==='tagad'&&S.reassess.pain);
+  const entries=[[pending?'🔄 סריקה והערכה':'🔎 סריקה והערכה',assessmentMenu,false,pending?'secondary':''],[packing?'🩸 המשך פקינג':'🩸 עצירת דימומים',bleedMenu,!known&&!packing,!S.qualification&&(known||packing)?'criticalAction':''],['🫁 נתיב אוויר ונשימה',respMenu],['🫀 מחזור דם ותרופות',circulationMenu],['🚑 פינוי והגנה',evacuationMenu],['🧑‍🤝‍🧑 סיוע וכוחות',supportActionsMenu]];
+  let buttons=Array.from(box.children).filter(b=>b.tagName==='BUTTON');
+  if(buttons.length!==6){box.innerHTML='';entries.forEach(([label])=>addCard(box,label,()=>{}));buttons=Array.from(box.children)}
+  buttons.forEach((button,index)=>{let [label,fn,disabled,extra]=entries[index];button.textContent=label;button.disabled=!!disabled;button.className='cardbtn'+(extra?' '+extra:'');button.onclick=()=>openPanel42(fn,{kind:'card',index})});
+  if(nav42.anchor?.kind==='card')mountPanel42();
+};
+function treatmentState42(w){
+  if(w.packing===2)return'שלב 2/3 הושלם — הלחץ הסתיים, נותר כיסוי וקיבוע';
+  if(w.packing===1){const sol=S.soldiers.find(s=>s.busy&&s.wound===w);return sol?'שלב 2/3 — לוחם '+sol.id+' מבצע לחץ ישיר':'שלב 1/3 הושלם — התחבושת בפצע'}
+  if(w.controlledBy)return'הדימום נעצר · '+({tq:'חוסם עורקים',packing:'פקינג ותחבושת',bandage:'תחבושת אישית'}[w.controlledBy]||'אמצעי עצירה')+(w.verified?'':' · ממתינה בדיקה לאחר תזוזה');
+  return w.active?'זוהה דימום פעיל':'פציעה שזוהתה ללא דימום חיצוני פעיל';
+}
+function updateWoundContext42(){
+  const node=document.getElementById('woundContext42');if(!node)return;
+  const w=S?.wounds?.find(w=>w.known&&w.id===selectedWound41);
+  node.classList.toggle('hidden',!w);node.textContent=w?w.p+' · '+treatmentState42(w):'';
+}
+const woundMenuBefore42=bodyWoundMenu;
+bodyWoundMenu=function(w){
+  if(!w?.known)return;
+  if(!nav42.refreshing&&nav42.mode!=='refresh'&&nav42.mode!=='child'){
+    nav42.stack=[];nav42.frame=null;nav42.anchor={kind:'body'};nav42.mode='root';
+  }
+  selectedWound41=w.id;woundMenuBefore42(w);updateWoundContext42();
+};
+const bleedMethodsBefore42=bleedMethods;
+bleedMethods=persistentMenu41(function(w){selectedWound41=w.id;renderBodyMap();return bleedMethodsBefore42(w)});
+pressureMenu=persistentMenu41(function(w){
+  if(w.packing!==1)return bleedMethods(w);
+  const helper=S.soldiers.find(sol=>sol.busy&&sol.wound===w);
+  if(!helper){
+    const items=[['החובש מבצע 3 דקות לחץ',()=>woundAction40(w,()=>act(180,'הושלמו 3 דקות לחץ על '+w.p,()=>w.packing=2,true))]];
+    S.soldiers.filter(sol=>!sol.busy).forEach(sol=>items.push(['העבר לחץ ללוחם '+sol.id,()=>delegatePressure(w,sol)]));
+    return sheet('לחץ ישיר — '+w.p,items,'הלחץ נמשך 3 דקות רצופות. ניתן להקצות לוחם ולעבוד במקביל.');
+  }
+  sheet('לחץ ישיר — '+w.p,[['לוחם '+helper.id+' מבצע לחץ — אפשר להמשיך בטיפול אחר',()=>{},true],['ביטול הלחץ',()=>cancelSoldier40(helper)]],'הלחץ כבר מתבצע. אין צורך להקצות לוחם נוסף.');
+});
+const delegatePressureBefore42=delegatePressure;
+delegatePressure=function(w,sol){
+  if(S.paused||S.ended)return;
+  if(S.soldiers.some(x=>x.busy&&x.wound===w))return notice42('הלחץ כבר מתבצע על ידי לוחם מסייע.','info');
+  return delegatePressureBefore42(w,sol);
+};
+// All nested menus rebuild from state, while back navigation retains their parent.
+posMenu=persistentMenu41(posMenu);handoffReportMenu=persistentMenu41(handoffReportMenu);reportFieldMenu=persistentMenu41(reportFieldMenu);teamReqMenu=persistentMenu41(teamReqMenu);assignSoldier40=persistentMenu41(assignSoldier40);waitMenu=persistentMenu41(waitMenu);liveInstructorMenu=persistentMenu41(liveInstructorMenu);
+const bodyRenderBefore42=renderBodyMap;
+renderBodyMap=function(){
+  bodyRenderBefore42();
+  document.querySelectorAll('[data-wound]').forEach(node=>{
+    const w=S.wounds.find(w=>w.known&&String(w.id)===node.dataset.wound);if(!w)return;
+    node.setAttribute('role','button');node.setAttribute('tabindex','0');node.setAttribute('aria-label',w.p+' · '+treatmentState42(w));node.setAttribute('aria-pressed',String(w.id===selectedWound41));
+    const choose=()=>{nav42.mode='root';nav42.anchor={kind:'body'};bodyWoundMenu(w);mountPanel42();scrollPanel42()};node.onclick=choose;node.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose()}};
+  });updateWoundContext42();
+};
+function knowledge42(){
+  return {t:S.time,location:S.loc,mechanism:S.mech,exposed:!!S.exposed,observation:obs(),behavior:patientBehavior(),
+    wounds:S.wounds.filter(w=>w.known).map(w=>({id:w.id,location:w.p,status:treatmentState42(w)})),
+    measured:JSON.parse(JSON.stringify(S.measured||{})),pain:S.painAssessed?S.lastPainAssessment:null,
+    helpers:S.soldiers.filter(s=>s.busy).map(s=>({id:s.id,task:s.task})),iv:S.iv};
+}
+const logBefore42=log;
+log=function(txt,kind='info'){
+  logBefore42(txt,kind);
+  if(uiAction42&&!actionDepth42)notice42(txt,/אין|לא ניתן|כבר|יש להשלים/.test(txt)?'info':'done');
+};
+const actBefore42=act;
+act=function(base,text,after=null,fixed=false,score=null){
+  if(!S||S.mci)return actBefore42(base,text,after,fixed,score);
+  if(S.ended||S.paused)return false;
+  const before=knowledge42(),eventStart=S.decisionEvents?.length||0,delayStart=S.scanDelays?.length||0,target=woundContext40;
+  let label=typeof text==='string'?text:'',result;actionDepth42++;
+  try{result=actBefore42(base,typeof text==='function'?()=>{label=text();return label}:text,after,fixed,score)}finally{actionDepth42--}
+  if(result){
+    const entry={id:(S.evidence42?.length||0)+1,start:before.t,end:S.time,label,target,before,after:knowledge42(),type:S.decisionEvents?.at(-1)?.type||'other'};
+    (S.evidence42??=[]).push(entry);
+    S.decisionEvents.slice(eventStart).forEach(e=>e.evidenceId42=entry.id);S.scanDelays.slice(delayStart).forEach(e=>e.evidenceId42=entry.id);
+    const completed=(S.completions42||[]).filter(c=>c.t>before.t&&c.t<=S.time);
+    notice42((completed.length?completed.map(c=>c.text).join(' · ')+' · ':'')+label,/לא אושרה|לא נמצאה התוויה|לא בוצע/.test(label)?'info':'done');refreshPanel42(true);
+  }
+  return result;
+};
+const evolveBefore42=evolve;
+evolve=function(seconds){
+  if(!S||S.mci)return evolveBefore42(seconds);
+  const pending=S.soldiers.filter(s=>s.busy).map(s=>({id:s.id,until:s.until,task:s.task,wound:s.wound}));
+  let result=evolveBefore42(seconds);
+  if(!S.ended){
+    const finished=pending.filter(p=>S.time>=p.until&&!S.soldiers.find(s=>s.id===p.id)?.busy);
+    finished.forEach(p=>notice42('לוחם '+p.id+' השלים '+p.task+(p.wound?' · שלב 2/3 הסתיים, אפשר לקבע בתחבושת':'')));
+    if(finished.length){(S.completions42??=[]).push(...finished.map(p=>({t:p.until,text:'לוחם '+p.id+' השלים '+p.task})));refreshPanel42(true)}
+  }
+  return result;
+};
+const renderBefore42=render;
+render=function(){renderBefore42();if(!S||S.mci)return;refreshPanel42();updateWoundContext42()};
+const startBefore42=start;
+start=function(...args){nav42={stack:[],frame:null,mode:'root',anchor:null,refreshing:false,signature:''};let r=startBefore42(...args);S.evidence42=[];S.completions42=[];S.startKnowledge42=knowledge42();notice42('מוכנים להתחלת הטיפול','info');return r};
+const reportChangedBefore42=reportChanged40;
+reportChanged40=function(){return S.role==='team'?[]:reportChangedBefore42()};
+// Independent priority choices must honor the same active-pressure state as actual actions.
+decisionOptions40=function(){let snap=decisionSnapshot(),limb=S.wounds.some(w=>w.known&&w.active&&w.z==='limb');if(S.loc==='שטח')return limb?['bleed']:['evac'];if(snap.activeKnown)return['bleed'];if(scanDue())return S.reassess.bleed?['scan','check']:['scan'];if(S.reassess.bleed)return['check'];if(!physiology().conscious&&!S.awPlaced&&!S.intubated)return['airway'];return['scan','airway','care','evac','check']};
+const statusBefore42=statusLabel39;
+statusLabel39=function(status){return status==='partial'?'הושלם חלקית':statusBefore42(status)};
+function evidenceFor42(item){
+  const events=S.evidence42||[],bad=S.decisionEvents?.find(e=>e.label===item.label&&e.tEnd===item.time);
+  if(bad?.evidenceId42)return events.find(e=>e.id===bad.evidenceId42);
+  if(item.label==='סריקה בתזמון הנכון בנאפ״ל'&&S.scanDelays.length)return events.find(e=>e.id===S.scanDelays[0].evidenceId42);
+  if(item.label.startsWith('עצירת דימום ב')){let w=S.wounds.find(w=>item.label==='עצירת דימום ב'+w.p);return events.find(e=>e.end===w?.controlledAt&&(e.target===w.id||e.type==='bleed'))}
+  if(item.label.startsWith('בדיקת יעילות לאחר')){let c=S.movementChecks.find(c=>item.label==='בדיקת יעילות לאחר '+c.label&&c.t===item.time);return events.find(e=>e.end===(c?.checkedAt??c?.t))}
+  if(item.time!=null)return events.find(e=>e.end===item.time)||events.find(e=>e.start===item.time);
+  return null;
+}
+const assessBefore42=assess39;
+assess39=function(){
+  const a=assessBefore42(),report=a.items.find(i=>i.label==='דיווח רפואי מלא');
+  if(report&&S.handoffReported){
+    const last=S.reportHistory40.at(-1),wrong=last?.fields.filter(f=>!f.correct)||[];
+    report.credit42=S.reportQuality/6;report.status=wrong.length?'partial':'correct';
+    report.actual='דיווח נמסר ב־'+fmt(S.handoffAt)+' · '+S.reportQuality+'/6 רכיבים מדויקים'+(wrong.length?' · '+wrong.map(f=>f.label+': '+(f.missing?'חסר':'לא מדויק')).join('; '):'');
+  }
+  a.items.forEach(i=>{i.earned42=i.weight*(i.credit42??({correct:1,late:.5}[i.status]||0));i.evidence42=evidenceFor42(i)||null});
+  a.possible=a.items.reduce((n,i)=>n+i.weight,0);a.earned=a.items.reduce((n,i)=>n+i.earned42,0);a.raw=Math.round(100*a.earned/Math.max(1,a.possible));a.score=Math.min(a.raw,a.cap);
+  a.items.forEach(i=>i.lostPoints42=100*(i.weight-i.earned42)/Math.max(1,a.possible));a.groups.forEach(g=>g.items=a.items.filter(i=>i.group===g.key));return a;
+};
+function knowledgeHtml42(k){
+  if(!k)return'<p>לא קיים תיעוד זמין לרגע זה.</p>';
+  const names={pulse:'דופק',bp:'ל״ד',spo:'סטורציה',resp:'נשימה',con:'הכרה'};
+  const values=Object.entries(k.measured).filter(([key])=>key!=='bp'||S.role==='tagad').map(([key,m])=>'<div>'+esc(names[key]||key)+': '+esc(key==='pulse'?pulseDisplay(m):String(m.value))+' · נמדד '+fmt(m.t)+'</div>').join('');
+  return '<div class="knowledge42"><div>'+fmt(k.t)+' · '+esc(k.location)+' · '+esc(k.mechanism)+'</div><p>'+esc(k.observation)+'</p><div>'+esc(k.behavior)+'</div><p>'+(k.wounds.length?k.wounds.map(w=>esc(w.location+' — '+w.status)).join('<br>'):'לא זוהו פציעות')+'</p><div>'+(values||'מדדים טרם נלקחו')+'</div>'+(k.pain!=null?'<div>כאב שנבדק: '+esc(String(k.pain))+'</div>':'')+(k.helpers.length?'<p>'+k.helpers.map(s=>esc('לוחם '+s.id+': '+s.task)).join('<br>')+'</p>':'')+'</div>';
+}
+function reportEvidenceHtml42(){
+  const r=S.reportHistory40?.at(-1);if(!r)return'';
+  return '<div class="reportTable42"><table><caption>הדיווח שנמסר ב־'+fmt(r.t)+'</caption><thead><tr><th>רכיב</th><th>מה נמסר</th><th>המידע שהיה זמין בעת הדיווח</th></tr></thead><tbody>'+r.fields.map(f=>'<tr><th>'+esc(f.label)+'<br>'+(!f.correct?(f.missing?'חסר':'לא מדויק'):'תקין')+'</th><td>'+esc(f.text||'לא נמסר רכיב זה')+'</td><td>'+esc(f.expected)+'</td></tr>').join('')+'</tbody></table></div>';
+}
+function itemEvidenceHtml42(i){
+  const e=i.evidence42,k=e?.before||knowledge42();
+  let reason=i.status==='correct'?'הדרישה הושלמה.':i.status==='partial'?'הדיווח נמסר. הזיכוי ניתן בנפרד לכל רכיב מדויק.':i.status==='missing'?'הדרישה לא הושלמה עד סיום התרחיש.':i.actual+' · '+i.impact;
+  return '<details class="evidence42 '+i.status+'"><summary>'+esc(i.label)+'<small>'+statusLabel39(i.status)+' · '+i.earned42.toFixed(1)+'/'+i.weight.toFixed(1)+(i.lostPoints42?' · חסרים '+i.lostPoints42.toFixed(1)+' נק׳ לפני תקרה':'')+'</small></summary><div><p>'+esc(i.actual)+'</p><p>'+esc(reason)+'</p>'+(e?'<p>פעולה מתועדת: '+esc(e.label)+' · '+fmt(e.start)+'–'+fmt(e.end)+'</p>':'<p>מצב הדרישה נבדק בסיום · '+fmt(S.time)+'</p>')+'<b>'+(e?'המידע שהיה זמין לפני הפעולה':'המידע שהיה זמין בסיום')+'</b>'+knowledgeHtml42(k)+(i.label==='דיווח רפואי מלא'?reportEvidenceHtml42():'')+'</div></details>';
+}
+const debriefBefore42=debrief;
+debrief=function(){
+  debriefBefore42();if(S.mci)return;const a=assess39();S.finalAssessment=a;
+  $('#breakdown').innerHTML='<p class="scoreMath42">ניקוד לפני תקרה: '+a.raw+' · תקרת ציון: '+a.cap+' · ציון סופי: '+a.score+'<br>הניקוד מחושב ביחס לסעיפים הרלוונטיים. ההפרש בכל סעיף מוצג לפני עיגול ותקרה; התקרה אינה קנס שמתווסף לכל סעיף.</p>'+a.groups.map(g=>'<details class="scoreRow" '+(g.items.some(i=>i.status!=='correct')?'open':'')+'><summary>'+g.key+' · '+g.title+'<span>'+g.items.filter(i=>i.status==='correct').length+'/'+g.items.length+'</span></summary><div>'+g.items.map(itemEvidenceHtml42).join('')+'</div></details>').join('');
+  const capEvents=[...S.criticalErrors.map(e=>({limit:75,text:e.text,t:e.t})),...S.unnecessaryActions.map(e=>({limit:92,text:e.reason,t:e.tStart,e})),...S.priorityErrors.map(e=>({limit:85,text:e.reason,t:e.tStart,e})),...(S.doseErrors?[{limit:55,text:'טעות במינון שנשאב',t:S.draws.find(d=>d.status!=='correct')?.at??S.time}]:[]),...(S.dead?[{limit:40,text:'מוות בעקבות דימום שלא נעצר בזמן התרחיש',t:S.time}]:[])];
+  $('#caps').innerHTML=capEvents.map(c=>{const evidence=S.evidence42.find(e=>e.id===c.e?.evidenceId42)||S.evidence42.find(e=>e.start===c.t);return'<details class="cap"><summary>תקרה '+c.limit+' · '+esc(c.text)+' · '+fmt(c.t)+'</summary>'+knowledgeHtml42(evidence?.before||S.evidence42.filter(e=>e.end<=c.t).at(-1)?.after||S.startKnowledge42)+'</details>'}).join('');
+};
+let instructorBrand=document.querySelector('#instructor .brand'),debriefBrand=document.querySelector('#debrief .brand'),bodyHeading=document.querySelector('#sim .overviewGrid>div:last-child h3');if(instructorBrand)instructorBrand.textContent='מצב מדריך · V4.2.0';if(debriefBrand)debriefBrand.textContent='דיבריף V4.2.0';if(bodyHeading)bodyHeading.textContent='דמות הפצוע';
 [['cric','פגיעת צוואר — תרגול קוניוטומיה'],['airwayUnconscious','טובוס בפצוע לא בהכרה'],['mixedBack','דימום גלוי ופגיעת גב נסתרת'],['hiddenTxa','התוויית TXA נסתרת'],['noAdvanced','ללא צורך בתרופה או פרוצדורה']].forEach(([value,label])=>{let option=document.createElement('option');option.value=value;option.textContent=label;$('#customInjury').appendChild(option)});
 let simMain=document.querySelector('#sim main');if(simMain){let feedback=document.createElement('div');feedback.className='feedbackStrip';feedback.innerHTML='<b id="phaseGuidance"></b><small id="actionReceipt" role="status" aria-live="polite">מוכנים להתחלת הטיפול</small>';simMain.prepend(feedback)}
 let simUtility=document.querySelector('#sim .utility');if(simUtility){let b=document.createElement('button');b.className='cardbtn';b.textContent='דווח על בעיה';b.onclick=exportIssue;simUtility.appendChild(b)}
 if(simUtility){let liveButton=document.createElement('button');liveButton.id='instructorLiveQuick';liveButton.className='cardbtn liveInstructor';liveButton.textContent='🎛️ מדריך חי';liveButton.style.display='none';liveButton.onclick=liveInstructorMenu;simUtility.appendChild(liveButton)}
 $('#team').onclick=()=>chooseDifficulty('team');$('#tagad').onclick=()=>chooseDifficulty('tagad');$('#lab').onclick=labMenu;$('#mciBtn').onclick=startMCI;$('#instructorBtn').onclick=()=>show('instructor');$('#customStart').onclick=startCustomScenario;$('#customBack').onclick=()=>show('home');$('#mciFinish').onclick=finishMCI;$('#mciHome').onclick=()=>{M=null;S=null;show('home')};$('#closeSheet').onclick=closeSheet;$('#inventoryQuick').onclick=inventoryMenu;$('#waitQuick').onclick=waitMenu;$('#again').onclick=()=>S&&S.mci?startMCI():S&&S.presetKey&&PRESETS[S.presetKey]?startPreset(S.presetKey):S?start(S.role,null,null,S.difficulty):show('home');$('#homeBtn').onclick=()=>{S=null;show('home');renderHomeStats()};renderHomeStats();
+ensurePanel42();
+[['inventoryQuick',()=>inventoryMenu(),'utility'],['waitQuick',()=>waitMenu(),'utility'],['soldiers40',()=>soldierMenu(),'tasks'],['decision40',()=>nextDecision40(),'tasks'],['instructorLiveQuick',()=>liveInstructorMenu(),'utility']].forEach(([id,fn,kind])=>{const b=document.getElementById(id);if(b)b.onclick=()=>openPanel42(fn,{kind})});
 })();
 </script>
 </body>
